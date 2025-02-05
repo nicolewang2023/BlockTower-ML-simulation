@@ -1,0 +1,51 @@
+"""
+Author: Nicole Wang
+Date: April 2022
+
+This script implements a mental physics simulations using an existing physics engine BlockTower.
+"""
+
+import csv
+import random
+import pygame
+import pymunk
+from pymunk.vec2d import Vec2d
+
+# Ensure pymunk and pygame are installed before running
+
+# Number of trials
+NUM_TRIALS = 200
+X_MEAN = 300  # Mid-screen
+X_SD = 30  # Standard deviation for x-positions
+
+# CSV file to save results
+CSV_FILENAME = "block_tower_results.csv"
+
+# Function to generate random x-positions for blocks
+def generate_x_positions():
+    return [int(random.gauss(X_MEAN, X_SD)) for _ in range(6)]  # 6 blocks
+
+# Run the experiment
+def run_experiment():
+    # Open CSV file for writing
+    with open(CSV_FILENAME, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Trial", "X_Positions", "Prediction", "Outcome"])  # Header
+
+        for trial in range(1, NUM_TRIALS + 1):
+            x_positions = generate_x_positions()
+            tower = BlockTower(x_positions)  # Create block tower instance
+            
+            # Run the experiment for this trial
+            prediction, outcome = tower.run_person()
+
+            # Save results
+            writer.writerow([trial, x_positions, prediction, outcome])
+
+            print(f"Trial {trial}: Prediction={prediction}, Outcome={outcome}")
+
+    print(f"Experiment completed! Results saved to {CSV_FILENAME}")
+
+# Run the experiment if the script is executed directly
+if __name__ == "__main__":
+    run_experiment()
